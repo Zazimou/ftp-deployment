@@ -21,6 +21,7 @@ class CliRunner
 		'passivemode' => true,
 		'include' => '',
 		'ignore' => '',
+        'ignoreremote' => true,
 		'allowdelete' => true,
 		'purge' => '',
 		'before' => '',
@@ -170,6 +171,7 @@ class CliRunner
 			? $deployment->deploymentFile
 			: $config['deploymentfile'];
 		$deployment->allowDelete = (bool) $config['allowdelete'];
+        $deployment->ignoreRemote = (bool) $config['ignoreremote'];
 		$deployment->toPurge = self::toArray($config['purge'], true);
 		$deployment->runBefore = self::toArray($config['before'], true);
 		$deployment->runAfterUpload = self::toArray($config['afterupload'], true);
@@ -207,6 +209,8 @@ class CliRunner
 				pcntl_signal(SIGINT, SIG_DFL);
 				throw new \Exception('Terminated');
 			});
+			pcntl_async_signals(true);
+
 		} elseif (function_exists('sapi_windows_set_ctrl_handler')) {
 			sapi_windows_set_ctrl_handler(function () {
 				throw new \Exception('Terminated');
